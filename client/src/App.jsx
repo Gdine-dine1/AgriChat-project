@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
+import PostDetail from './pages/PostDetails';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/posts/:id" element={<PostDetail />} />
       </Routes>
     </Router>
   );

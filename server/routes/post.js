@@ -77,5 +77,25 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
+// Like or Unlike a Post
+router.put('/:id/like', verifyToken, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    const userId = req.user.id;
+
+    if (!post.likes.includes(userId)) {
+      post.likes.push(userId); // like
+    } else {
+      post.likes = post.likes.filter(id => id.toString() !== userId); // unlike
+    }
+
+    await post.save();
+    res.json({ likes: post.likes.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 module.exports = router;

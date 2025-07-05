@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { FaHeart } from 'react-icons/fa';
 
 function PostList() {
   const [posts, setPosts] = useState([]);
@@ -54,12 +56,25 @@ function PostList() {
     }
   };
 
+  const toggleLike = async (postId) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/posts/${postId}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchPosts();
+    } catch (err) {
+      console.error('Like failed:', err);
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
   }, []);
 
   return (
-    <div>
+    <div className="px-4 py-6">
       {posts.length === 0 ? (
         <p className="text-center text-gray-600">No posts yet.</p>
       ) : (
@@ -93,10 +108,23 @@ function PostList() {
               </>
             ) : (
               <>
-                <p className="text-gray-800">{post.content}</p>
-                <p className="text-xs text-gray-500 mt-2">
-                  Posted by {post.username || 'Unknown'} on {new Date(post.createdAt).toLocaleString()}
-                </p>
+                <div className="flex justify-between items-start">
+                  <Link to={`/posts/${post._id}`} className="flex-1 hover:bg-green-50 rounded px-1 py-1">
+                    <p className="text-gray-800">{post.content}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Posted by {post.username || 'Unknown'} on {new Date(post.createdAt).toLocaleString()}
+                    </p>
+                  </Link>
+                  <button
+                    onClick={() => toggleLike(post._id)}
+                    className="text-red-500 text-sm flex items-center gap-1 ml-4 hover:scale-105 transition"
+                    title="Like post"
+                  >
+                    <FaHeart className="text-lg" />
+                    <span>{post.likes?.length || 0}</span>
+                  </button>
+                </div>
+
                 {user?.id === post.userId && (
                   <div className="flex gap-2 mt-3">
                     <button

@@ -5,6 +5,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const contactRoute = require('./routes/contact');
 const postRoutes = require('./routes/Post');
+const commentRoutes = require('./routes/comments');
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoute);
 app.use('/api/posts', postRoutes);
+app.use('/api/comments', commentRoutes);
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
