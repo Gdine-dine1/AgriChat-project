@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostForm from '../components/PostForm';
 import PostList from '../components/PostList';
+import { Link } from 'react-router-dom';
+
 
 
 function Dashboard() {
@@ -26,6 +28,14 @@ function Dashboard() {
       {/* Header */}
       <header className="bg-white shadow p-4 px-6 flex justify-between items-center">
         <h1 className="text-xl font-bold text-green-700">AgriConnect Dashboard</h1>
+
+        <Link
+          to="/chatroom"
+           className="inline-block mt-6 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+>
+             Enter Chatroom
+        </Link>
+
         <button
           onClick={() => {
             localStorage.removeItem("token");
@@ -43,6 +53,11 @@ function Dashboard() {
         <p className="text-gray-700 text-lg">
           Here you’ll be able to explore posts, chat with others, and share your farming ideas.
         </p>
+        <p className="text-gray-700 mt-2">
+          Connect with your fellow farmers and explow the world of agriculture!. Live chat with them and 
+          share your experiences. TO DO SO ENTER THE CHATROOM
+        </p>
+
         <h2 className="text-2xl font-semibold text-green-700 mb-4">Share Your Farming Thoughts</h2>
         <PostForm onPostCreated={handlePostCreated} />
         <PostList key={reload} />

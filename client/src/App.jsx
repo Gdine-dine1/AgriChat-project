@@ -7,6 +7,7 @@ import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import PostDetail from './pages/PostDetails';
+import Chat from './components/Chat';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/posts/:id" element={<PostDetail />} />
+        <Route path="/chatroom" element={<Chat />} />
       </Routes>
     </Router>
   );
