@@ -1,37 +1,30 @@
 const express = require('express');
-const Comment = require('../models/Comment');
-const Post = require('../models/Post');
-const User = require('../models/user');
+const router = express.Router();
+const Comment = require('../models/comment');
 const verifyToken = require('../middleware/auth');
 
-const router = express.Router();
-
-// Add a comment to a post
-router.post('/:postId', verifyToken, async (req, res) => {
+// Get all comments for a post
+router.get('/:postId', async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    const { text } = req.body;
-
-    const comment = new Comment({
-      postId: req.params.postId,
-      userId: user._id,
-      username: user.username,
-      text,
-    });
-
-    await comment.save();
-    res.status(201).json(comment);
+    const comments = await Comment.find({ postId: req.params.postId }).sort({ createdAt: -1 });
+    res.json(comments);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Get all comments for a post
-router.get('/:postId', async (req, res) => {
+// Create a new comment
+router.post('/:postId', verifyToken, async (req, res) => {
   try {
-    const comments = await Comment.find({ postId: req.params.postId })
-      .sort({ createdAt: -1 });
-    res.json(comments);
+    const newComment = new Comment({
+      postId: req.params.postId,
+      userId: req.user.id,
+      username: req.user.username,
+      text: req.body.text,
+    });
+
+    const saved = await newComment.save();
+    res.status(201).json(saved);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -41,14 +34,35 @@ router.get('/:postId', async (req, res) => {
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
+
+    if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
     if (comment.userId.toString() !== req.user.id) {
-      return res.status(403).json({ error: "You can only delete your own comment" });
+      return res.status(403).json({ message: 'You can only delete your own comments' });
     }
 
     await comment.deleteOne();
-    res.json({ message: "Comment deleted" });
+    res.json({ message: 'Comment deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Update/edit a comment
+router.put('/:id', verifyToken, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+
+    if (!comment) return res.status(404).json({ message: 'Comment not found' });
+
+    if (comment.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only edit your own comments' });
+    }
+
+    comment.text = req.body.text || comment.text;
+    await comment.save();
+
+    res.json(comment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

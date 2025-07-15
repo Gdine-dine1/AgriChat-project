@@ -6,21 +6,29 @@ function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
-      localStorage.setItem('token', res.data.token);
-      alert('Logged in!');
-      navigate("/dashboard");
-    } catch (err) {
-      alert(err.response?.data?.error || "Login failed");
-    }
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post('http://localhost:5000/api/auth/login', form);
+    
+    // Save everything — token and user
+    const fullUser = {
+      ...res.data.user,      // includes id, username, role
+      token: res.data.token, // attach token
+    };
+
+    localStorage.setItem('user', JSON.stringify(fullUser));
+
+    alert('Logged in!');
+    navigate('/dashboard');
+  } catch (err) {
+    alert(err.response?.data?.error || 'Login failed');
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-green-50">
@@ -32,6 +40,7 @@ function Login() {
             placeholder="Email"
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
           />
           <input
             name="password"
@@ -39,6 +48,7 @@ function Login() {
             placeholder="Password"
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
           />
           <button
             type="submit"

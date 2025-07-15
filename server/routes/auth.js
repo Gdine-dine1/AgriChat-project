@@ -5,7 +5,7 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-// Register
+// Register route
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -13,10 +13,7 @@ router.post('/register', async (req, res) => {
     const user = new User({ username, email, password: hashed });
     await user.save();
 
-    // Generate token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.status(201).json({
       token,
@@ -31,23 +28,30 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+// Login route
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json("User not found");
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json("Invalid credentials");
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+        email: user.email,
+      },
     });
-
-    res.json({ token, user: { id: user._id, username: user.username, role: user.role } });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

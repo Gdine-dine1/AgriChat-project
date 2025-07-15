@@ -8,6 +8,9 @@ import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import PostDetail from './pages/PostDetails';
 import Chat from './components/Chat';
+import Profile from './pages/Profile';
+import MarketPage from './pages/MarketPage';
+import UploadProduct from './pages/UploadProduct';
 
 function App() {
   return (
@@ -22,6 +25,10 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/posts/:id" element={<PostDetail />} />
         <Route path="/chatroom" element={<Chat />} />
+        <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/market" element={<MarketPage />} />
+        <Route path="/upload" element={<UploadProduct />} />
+
       </Routes>
     </Router>
   );

@@ -4,6 +4,8 @@ import axios from 'axios';
 function CommentSection({ postId }) {
   const [comments, setComments] = useState([]);
   const [text, setText] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editText, setEditText] = useState('');
   const user = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
 
@@ -15,6 +17,10 @@ function CommentSection({ postId }) {
       console.error('Error loading comments:', err);
     }
   };
+
+  useEffect(() => {
+    fetchComments();
+  }, [postId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ function CommentSection({ postId }) {
     }
   };
 
-  const deleteComment = async (id) => {
+  const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/comments/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -44,9 +50,26 @@ function CommentSection({ postId }) {
     }
   };
 
-  useEffect(() => {
-    fetchComments();
-  }, [postId]);
+  const handleEdit = (comment) => {
+    setEditingCommentId(comment._id);
+    setEditText(comment.text);
+  };
+
+  const handleUpdate = async (id) => {
+    if (!editText.trim()) return;
+    try {
+      await axios.put(
+        `http://localhost:5000/api/comments/${id}`,
+        { text: editText },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEditingCommentId(null);
+      setEditText('');
+      fetchComments();
+    } catch {
+      alert('Failed to update comment');
+    }
+  };
 
   return (
     <div className="mt-8 max-w-2xl mx-auto bg-white p-4 rounded-xl shadow">
@@ -74,21 +97,58 @@ function CommentSection({ postId }) {
         comments.map((c) => (
           <div
             key={c._id}
-            className="border-t pt-2 mt-2 text-sm text-gray-800 flex justify-between"
+            className="border-t pt-2 mt-2 text-sm text-gray-800"
           >
-            <div>
-              <p>{c.text}</p>
-              <span className="text-xs text-gray-500">
-                {c.username} · {new Date(c.createdAt).toLocaleString()}
-              </span>
-            </div>
-            {user?.id === c.userId && (
-              <button
-                onClick={() => deleteComment(c._id)}
-                className="text-red-500 text-xs hover:underline ml-2"
-              >
-                Delete
-              </button>
+            {editingCommentId === c._id ? (
+              <div className="mb-2">
+                <textarea
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  className="w-full border rounded p-2 mb-2"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleUpdate(c._id)}
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingCommentId(null);
+                      setEditText('');
+                    }}
+                    className="bg-gray-300 text-gray-800 px-3 py-1 rounded text-xs"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-between">
+                <div>
+                  <p>{c.text}</p>
+                  <span className="text-xs text-gray-500">
+                    {c.username} · {new Date(c.createdAt).toLocaleString()}
+                  </span>
+                </div>
+                {user?.id === c.userId && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleEdit(c)}
+                      className="text-blue-500 text-xs hover:underline"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c._id)}
+                      className="text-red-500 text-xs hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ))
