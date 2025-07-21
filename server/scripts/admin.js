@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
-const User = require('../models/user'); // Adjust path if needed
+const User = require('../models/User'); // Adjust path if needed
 
 dotenv.config(); // Load env variables
 

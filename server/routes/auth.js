@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // Ensure your User model includes the `role` field
+const User = require('../models/User'); // Ensure your User model includes the `role` field
 
 const router = express.Router();
 
