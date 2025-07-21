@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
+const isAdmin = require('../middleware/admin');
 
 // Get all messages (most recent last)
 router.get('/', async (req, res) => {
@@ -46,6 +47,16 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete message' });
+  }
+});
+
+// Admin-only route to delete all messages
+router.delete('/admin/clear', isAdmin, async (req, res) => {
+  try {
+    await Message.deleteMany({});
+    res.json({ message: 'All chats cleared by admin.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to clear chats.' });
   }
 });
 

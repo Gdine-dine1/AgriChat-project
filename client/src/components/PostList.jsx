@@ -9,7 +9,7 @@ function PostList() {
   const [editContent, setEditContent] = useState('');
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
+  const token = user?.token;
 
   const fetchPosts = async () => {
     try {

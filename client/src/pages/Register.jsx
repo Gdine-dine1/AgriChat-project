@@ -60,6 +60,10 @@ function Register() {
           >
             Create Account
           </button>
+          <div className="text-center text-sm text-gray-600 mt-4">
+            Already have an account? 
+            <a href="/login" className="text-green-600 hover:underline ml-1">Login here</a>
+          </div>
         </form>
       </div>
     </div>

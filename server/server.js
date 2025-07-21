@@ -14,6 +14,8 @@ const messageRoutes = require('./routes/messages');
 const profileRoutes = require('./routes/profile');
 const userRoutes = require('./routes/user');
 const productRoutes = require('./routes/product');
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
 // App and Server setup
 const app = express();
@@ -42,7 +44,9 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/shop', shopRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use('/api/admin', adminRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {

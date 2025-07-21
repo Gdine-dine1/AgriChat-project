@@ -196,7 +196,7 @@ function MarketPage() {
                   Farmer: {product.farmer?.username || 'Unknown'}
                 </p>
 
-                {/* Owner Controls */}
+                {/* Owner Controls or Contact */}
                 {user && user.id === product.farmer?._id ? (
                   <div className="mt-3 flex flex-col gap-2">
                     <button
@@ -225,8 +225,6 @@ function MarketPage() {
           </motion.div>
         ))}
       </div>
-
-      {/* Contact Modal */}
       {selectedFarmer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-xl">
