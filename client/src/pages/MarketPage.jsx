@@ -184,7 +184,11 @@ function MarketPage() {
               <>
                 {product.imageUrl && (
                   <img
-                    src={product.imageUrl}
+                    src={
+                      product.imageUrl.startsWith('http')
+                        ? product.imageUrl
+                        : `${API_URL}${product.imageUrl}`
+                    }
                     alt={product.name}
                     className="h-40 w-full object-cover rounded mb-3"
                   />
