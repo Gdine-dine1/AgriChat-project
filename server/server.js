@@ -17,15 +17,22 @@ const productRoutes = require('./routes/product');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-// CORS setup - must be before any routes
+const app = express();
+
+// ✅ Define allowed origins
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'https://agri-chat-project.vercel.app'
 ];
 
-const app = express();
+// ✅ Log incoming origins (optional for debugging)
+app.use((req, res, next) => {
+  console.log("Incoming request from:", req.headers.origin);
+  next();
+});
 
+// ✅ Apply CORS middleware
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -37,22 +44,23 @@ app.use(cors({
   },
   credentials: true
 }));
-app.options('*', cors());
 
-// App and Server setup
+// ✅ You can remove this — unnecessary and could conflict
+// app.options('*', cors()); 
+
+app.use(express.json());
+
+// ✅ Setup HTTP server and Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }
 });
 
-// Middleware
-app.use(express.json());
-
-// API Routes
+// ✅ API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoute);
 app.use('/api/posts', postRoutes);
@@ -62,17 +70,17 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/shop', shopRoutes);
-app.use('/uploads', express.static('uploads'));
 app.use('/api/admin', adminRoutes);
+app.use('/uploads', express.static('uploads'));
 
-// MongoDB connection
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
-// ✅ Socket.IO Logic
+// ✅ Socket.IO logic
 const onlineUsers = new Map();
 
 io.on('connection', (socket) => {
@@ -114,10 +122,10 @@ io.on('connection', (socket) => {
   });
 });
 
-// Root route
+// ✅ Root route
 app.get('/', (req, res) => res.send('🌐 API Running'));
 
-// Start server
+// ✅ Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server listening on port ${PORT}`);
