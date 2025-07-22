@@ -3,13 +3,14 @@ import axios from 'axios';
 
 function PostForm({ onPostCreated }) {
   const [content, setContent] = useState('');
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async e => {
     e.preventDefault();
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const token = user?.token;
-      await axios.post('http://localhost:5000/api/posts', 
+      await axios.post(`${API_URL}/api/posts`, 
         { content }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

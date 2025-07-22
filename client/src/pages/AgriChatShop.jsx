@@ -17,6 +17,7 @@ function AgriChatShop() {
 
   const user = JSON.parse(localStorage.getItem('user'));
   const token = user?.token;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchItems();
@@ -38,7 +39,7 @@ function AgriChatShop() {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/shop/items');
+      const res = await axios.get(`${API_URL}/api/shop/items`);
       setItems(res.data);
       // Cache items for navbar cart dropdown
       localStorage.setItem('shopItemsCache', JSON.stringify(res.data));
@@ -51,7 +52,7 @@ function AgriChatShop() {
 
   const fetchOrderHistory = async () => {
     try {
-      const res = await axios.get('/api/shop/orders', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_URL}/api/shop/orders`, { headers: { Authorization: `Bearer ${token}` } });
       setOrderHistory(res.data);
     } catch (err) {
       // Optionally handle error
@@ -60,7 +61,7 @@ function AgriChatShop() {
 
   const fetchAllOrders = async () => {
     try {
-      const res = await axios.get('/api/shop/orders/all', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_URL}/api/shop/orders/all`, { headers: { Authorization: `Bearer ${token}` } });
       setAllOrders(res.data);
     } catch (err) {
       // Optionally handle error
@@ -69,7 +70,7 @@ function AgriChatShop() {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.put(`/api/shop/orders/${orderId}/status`, { status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`${API_URL}/api/shop/orders/${orderId}/status`, { status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
       fetchAllOrders();
     } catch {
       alert('Failed to update order status');
@@ -80,7 +81,7 @@ function AgriChatShop() {
   const handleAddItem = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/shop/items', newItem, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${API_URL}/api/shop/items`, newItem, { headers: { Authorization: `Bearer ${token}` } });
       setNewItem({ name: '', description: '', price: '', imageUrl: '', stock: '' });
       setShowAddForm(false);
       fetchItems();
@@ -97,7 +98,7 @@ function AgriChatShop() {
   const handleUpdateItem = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`/api/shop/items/${editId}`, editItem, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`${API_URL}/api/shop/items/${editId}`, editItem, { headers: { Authorization: `Bearer ${token}` } });
       setEditId(null);
       fetchItems();
     } catch {
@@ -108,7 +109,7 @@ function AgriChatShop() {
   const handleDeleteItem = async (id) => {
     if (!window.confirm('Delete this item?')) return;
     try {
-      await axios.delete(`/api/shop/items/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${API_URL}/api/shop/items/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchItems();
     } catch {
       alert('Failed to delete item');
@@ -136,7 +137,7 @@ function AgriChatShop() {
     e.preventDefault();
     if (!order.length) return;
     try {
-      await axios.post('/api/shop/orders', { items: order }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${API_URL}/api/shop/orders`, { items: order }, { headers: { Authorization: `Bearer ${token}` } });
       setOrder([]);
       setOrderSuccess(true);
       fetchOrderHistory();

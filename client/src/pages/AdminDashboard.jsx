@@ -24,16 +24,18 @@ const AdminDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const token = user?.token;
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const fetchData = async () => {
     try {
       const [postsRes, productsRes, messagesRes] = await Promise.all([
-        fetch('/api/admin/posts', {
+        fetch(`${API_URL}/api/admin/posts`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch('/api/admin/products', {
+        fetch(`${API_URL}/api/admin/products`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch('/api/admin/messages', {
+        fetch(`${API_URL}/api/admin/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -78,7 +80,7 @@ const AdminDashboard = () => {
   const handleAddPost = async (e) => {
     e.preventDefault();
     try {
-      await fetch('/api/admin/posts', {
+      await fetch(`${API_URL}/api/admin/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +97,7 @@ const AdminDashboard = () => {
 
   const handleDeletePost = async (id) => {
     if (!window.confirm('Delete this post?')) return;
-    await fetch(`/api/admin/posts/${id}`, {
+    await fetch(`${API_URL}/api/admin/posts/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -108,7 +110,7 @@ const AdminDashboard = () => {
   };
 
   const handleUpdatePost = async (id) => {
-    await fetch(`/api/admin/posts/${id}`, {
+    await fetch(`${API_URL}/api/admin/posts/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -125,7 +127,7 @@ const AdminDashboard = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
-      await fetch('/api/admin/products', {
+      await fetch(`${API_URL}/api/admin/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +144,7 @@ const AdminDashboard = () => {
 
   const handleDeleteProduct = async (id) => {
     if (!window.confirm('Delete this product?')) return;
-    await fetch(`/api/admin/products/${id}`, {
+    await fetch(`${API_URL}/api/admin/products/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -161,7 +163,7 @@ const AdminDashboard = () => {
   };
 
   const handleUpdateProduct = async (id) => {
-    await fetch(`/api/admin/products/${id}`, {
+    await fetch(`${API_URL}/api/admin/products/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -178,7 +180,7 @@ const AdminDashboard = () => {
   const handleAddMessage = async (e) => {
     e.preventDefault();
     try {
-      await fetch('/api/admin/messages', {
+      await fetch(`${API_URL}/api/admin/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +197,7 @@ const AdminDashboard = () => {
 
   const handleDeleteMessage = async (id) => {
     if (!window.confirm('Delete this message?')) return;
-    await fetch(`/api/admin/messages/${id}`, {
+    await fetch(`${API_URL}/api/admin/messages/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -208,7 +210,7 @@ const AdminDashboard = () => {
   };
 
   const handleUpdateMessage = async (id) => {
-    await fetch(`/api/admin/messages/${id}`, {
+    await fetch(`${API_URL}/api/admin/messages/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

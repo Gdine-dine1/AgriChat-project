@@ -8,10 +8,11 @@ function CommentSection({ postId }) {
   const [editText, setEditText] = useState('');
   const user = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/${postId}`);
+      const res = await axios.get(`${API_URL}/api/comments/${postId}`);
       setComments(res.data);
     } catch (err) {
       console.error('Error loading comments:', err);
@@ -28,7 +29,7 @@ function CommentSection({ postId }) {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/comments/${postId}`,
+        `${API_URL}/api/comments/${postId}`,
         { text },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -41,7 +42,7 @@ function CommentSection({ postId }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/comments/${id}`, {
+      await axios.delete(`${API_URL}/api/comments/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchComments();
@@ -59,7 +60,7 @@ function CommentSection({ postId }) {
     if (!editText.trim()) return;
     try {
       await axios.put(
-        `http://localhost:5000/api/comments/${id}`,
+        `${API_URL}/api/comments/${id}`,
         { text: editText },
         { headers: { Authorization: `Bearer ${token}` } }
       );

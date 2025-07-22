@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import EmojiPicker from 'emoji-picker-react';
 
-const socket = io('http://localhost:5000', { autoConnect: false });
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -27,7 +27,7 @@ function Chat() {
 
     const fetchMessages = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/messages');
+        const res = await axios.get(`${API_URL}/api/messages`);
         setMessages(res.data);
       } catch (err) {
         console.error(err);
@@ -101,13 +101,13 @@ function Chat() {
 
     try {
       if (editingId) {
-        const res = await axios.put(`http://localhost:5000/api/messages/${editingId}`, {
+        const res = await axios.put(`${API_URL}/api/messages/${editingId}`, {
           content,
         });
         socket.emit('editMessage', res.data);
         setEditingId(null);
       } else {
-        const res = await axios.post('http://localhost:5000/api/messages', newMessage);
+        const res = await axios.post(`${API_URL}/api/messages`, newMessage);
         socket.emit('sendMessage', res.data);
       }
       setContent('');
@@ -119,7 +119,7 @@ function Chat() {
 
   const deleteMessage = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/messages/${id}`);
+      await axios.delete(`${API_URL}/api/messages/${id}`);
       socket.emit('deleteMessage', id);
     } catch (err) {
       console.error('Delete failed', err);
@@ -166,7 +166,7 @@ function Chat() {
   const clearAllMessages = async () => {
     if (!window.confirm('Are you sure you want to clear all chats?')) return;
     try {
-      await axios.delete('http://localhost:5000/api/messages/admin/clear', {
+      await axios.delete(`${API_URL}/api/messages/admin/clear`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },

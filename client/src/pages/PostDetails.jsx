@@ -6,11 +6,12 @@ import CommentSection from '../components/CommentSection';
 function PostDetail() {
   const { id } = useParams(); // post ID from URL
   const [post, setPost] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/posts/${id}`);
+        const res = await axios.get(`${API_URL}/api/posts/${id}`);
         setPost(res.data);
       } catch (err) {
         console.error('Error fetching post:', err);

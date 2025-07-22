@@ -8,6 +8,7 @@ function UploadProduct() {
   const [message, setMessage] = useState('');
 
   const user = JSON.parse(localStorage.getItem('user')); // assumes user has `_id` stored
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ function UploadProduct() {
         farmer: user._id,
       };
 
-      await axios.post('http://localhost:5000/api/products', newProduct);
+      await axios.post(`${API_URL}/api/products`, newProduct);
       setMessage('✅ Product uploaded successfully!');
       setName('');
       setDescription('');

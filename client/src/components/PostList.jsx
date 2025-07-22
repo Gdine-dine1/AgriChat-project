@@ -11,9 +11,11 @@ function PostList() {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user?.token;
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const fetchPosts = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/posts');
+      const res = await axios.get(`${API_URL}/api/posts`);
       setPosts(res.data);
     } catch (err) {
       console.error('Failed to fetch posts:', err);
@@ -23,7 +25,7 @@ function PostList() {
   const deletePost = async (id) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/posts/${id}`, {
+      await axios.delete(`${API_URL}/api/posts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchPosts();
@@ -45,7 +47,7 @@ function PostList() {
   const saveEdit = async (id) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/posts/${id}`,
+        `${API_URL}/api/posts/${id}`,
         { content: editContent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -59,7 +61,7 @@ function PostList() {
   const toggleLike = async (postId) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/posts/${postId}/like`,
+        `${API_URL}/api/posts/${postId}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

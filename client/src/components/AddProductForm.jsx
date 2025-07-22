@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function AddProductForm({ initialData, isEdit, onProductAdded, onProductUpdated, onCancel }) {
   const user = JSON.parse(localStorage.getItem('user'));
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -52,13 +53,13 @@ function AddProductForm({ initialData, isEdit, onProductAdded, onProductUpdated,
 
       if (isEdit) {
         const res = await axios.put(
-          `http://localhost:5000/api/products/${initialData._id}`,
+          `${API_URL}/api/products/${initialData._id}`,
           data,
           config
         );
         onProductUpdated(res.data);
       } else {
-        const res = await axios.post('http://localhost:5000/api/products', data, config);
+        const res = await axios.post(`${API_URL}/api/products`, data, config);
         onProductAdded(res.data);
         setFormData({ name: '', description: '', price: '' });
         setImage(null);

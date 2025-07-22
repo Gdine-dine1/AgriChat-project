@@ -12,6 +12,7 @@ function MarketPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const user = JSON.parse(localStorage.getItem('user'));
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchProducts();
@@ -19,7 +20,7 @@ function MarketPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/products');
+      const res = await axios.get(`${API_URL}/api/products`);
       setProducts(res.data);
     } catch (err) {
       console.error('Failed to load products', err);
@@ -33,7 +34,7 @@ function MarketPage() {
 
   const handleDelete = async (productId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${productId}`, {
+      await axios.delete(`${API_URL}/api/products/${productId}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setProducts((prev) => prev.filter((p) => p._id !== productId));
@@ -63,7 +64,7 @@ function MarketPage() {
     e.preventDefault();
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/products/${productId}`,
+        `${API_URL}/api/products/${productId}`,
         editFormData,
         {
           headers: { Authorization: `Bearer ${user.token}` },
@@ -182,7 +183,7 @@ function MarketPage() {
               <>
                 {product.imageUrl && (
                   <img
-                    src={`http://localhost:5000${product.imageUrl}`}
+                    src={product.imageUrl}
                     alt={product.name}
                     className="h-40 w-full object-cover rounded mb-3"
                   />
