@@ -199,7 +199,7 @@ function MarketPage() {
                 </p>
 
                 {/* Owner Controls or Contact */}
-                {user && user.id === product.farmer?._id ? (
+                {user && (user._id === product.farmer?._id) ? (
                   <div className="mt-3 flex flex-col gap-2">
                     <button
                       onClick={() => handleEditToggle(product)}
