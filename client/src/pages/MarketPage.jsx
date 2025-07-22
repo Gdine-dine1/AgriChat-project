@@ -190,7 +190,8 @@ function MarketPage() {
                         : `${API_URL}${product.imageUrl}`
                     }
                     alt={product.name}
-                    className="h-40 w-full object-cover rounded mb-3"
+                    className="w-full max-h-80 object-contain rounded mb-3 bg-white"
+                    onError={e => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x300?text=No+Image'; }}
                   />
                 )}
                 <h2 className="text-lg font-bold text-green-700">{product.name}</h2>
