@@ -23,7 +23,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://agri-chat-project.vercel.app'
+  'https://agri-chat-project-2nwll4hyt-geradine-gicovis-projects.vercel.app'
 ];
 
 // ✅ Log incoming origins (optional for debugging)
