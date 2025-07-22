@@ -10,7 +10,7 @@ import PostDetail from './pages/PostDetails';
 import Chat from './components/Chat';
 import Profile from './pages/Profile';
 import MarketPage from './pages/MarketPage';
-import UploadProduct from './pages/UploadProduct';
+import UploadProduct from './pages/uploadProduct';
 import AdminDashboard from './pages/AdminDashboard';
 import AgriChatShop from './pages/AgriChatShop';
 import { useState, useEffect, useRef } from 'react';
