@@ -17,8 +17,29 @@ const productRoutes = require('./routes/product');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-// App and Server setup
+// CORS setup - must be before any routes
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://agri-chat-project.vercel.app'
+];
+
 const app = express();
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+app.options('*', cors());
+
+// App and Server setup
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -29,26 +50,6 @@ const io = new Server(server, {
 });
 
 // Middleware
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'https://agri-chat-project.vercel.app'
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
-// Handle preflight requests for all routes
-app.options('*', cors());
 app.use(express.json());
 
 // API Routes
