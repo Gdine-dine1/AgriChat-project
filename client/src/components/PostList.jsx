@@ -19,6 +19,7 @@ function PostList() {
       setPosts(res.data);
     } catch (err) {
       console.error('Failed to fetch posts:', err);
+      alert('Failed to fetch posts: ' + (err.response?.data?.error || err.message));
     }
   };
 

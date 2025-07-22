@@ -19,11 +19,13 @@ function Chat() {
   const scrollRef = useRef(null);
   const typingTimeoutRef = useRef();
   const user = JSON.parse(localStorage.getItem('user'));
+  const socketRef = useRef();
 
   useEffect(() => {
     if (!user?.username) return;
-    socket.connect();
-    socket.emit('online', user.username);
+    socketRef.current = io(API_URL);
+    socketRef.current.connect();
+    socketRef.current.emit('online', user.username);
 
     const fetchMessages = async () => {
       try {
@@ -35,19 +37,19 @@ function Chat() {
     };
     fetchMessages();
 
-    socket.on('receiveMessage', (msg) => {
+    socketRef.current.on('receiveMessage', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
 
-    socket.on('messageUpdated', (updated) => {
+    socketRef.current.on('messageUpdated', (updated) => {
       setMessages((prev) => prev.map((m) => (m._id === updated._id ? updated : m)));
     });
 
-    socket.on('messageDeleted', (id) => {
+    socketRef.current.on('messageDeleted', (id) => {
       setMessages((prev) => prev.filter((m) => m._id !== id));
     });
 
-    socket.on('typing', (username) => {
+    socketRef.current.on('typing', (username) => {
       if (username !== user.username) {
         setTypingUser(`${username} is typing...`);
         clearTimeout(typingTimeoutRef.current);
@@ -55,29 +57,30 @@ function Chat() {
       }
     });
 
-    socket.on('usersOnline', (count) => {
+    socketRef.current.on('usersOnline', (count) => {
       setOnlineCount(count);
     });
 
-    socket.on('messageReacted', ({ messageId, emoji, username }) => {
+    socketRef.current.on('messageReacted', ({ messageId, emoji, username }) => {
       setReactions((prev) => ({
         ...prev,
         [messageId]: [...(prev[messageId] || []), { emoji, username }],
       }));
     });
 
-    socket.on('clearAllMessages', () => {
+    socketRef.current.on('clearAllMessages', () => {
       setMessages([]);
     });
 
     return () => {
-      socket.off('receiveMessage');
-      socket.off('messageUpdated');
-      socket.off('messageDeleted');
-      socket.off('typing');
-      socket.off('usersOnline');
-      socket.off('messageReacted');
-      socket.off('clearAllMessages');
+      socketRef.current.off('receiveMessage');
+      socketRef.current.off('messageUpdated');
+      socketRef.current.off('messageDeleted');
+      socketRef.current.off('typing');
+      socketRef.current.off('usersOnline');
+      socketRef.current.off('messageReacted');
+      socketRef.current.off('clearAllMessages');
+      socketRef.current.disconnect();
     };
   }, [user?.username]);
 
@@ -87,7 +90,7 @@ function Chat() {
 
   const handleTyping = (e) => {
     setContent(e.target.value);
-    socket.emit('typing', user?.username);
+    socketRef.current.emit('typing', user?.username);
   };
 
   const sendMessage = async () => {
@@ -104,11 +107,11 @@ function Chat() {
         const res = await axios.put(`${API_URL}/api/messages/${editingId}`, {
           content,
         });
-        socket.emit('editMessage', res.data);
+        socketRef.current.emit('editMessage', res.data);
         setEditingId(null);
       } else {
         const res = await axios.post(`${API_URL}/api/messages`, newMessage);
-        socket.emit('sendMessage', res.data);
+        socketRef.current.emit('sendMessage', res.data);
       }
       setContent('');
       setReplyTo(null);
@@ -120,7 +123,7 @@ function Chat() {
   const deleteMessage = async (id) => {
     try {
       await axios.delete(`${API_URL}/api/messages/${id}`);
-      socket.emit('deleteMessage', id);
+      socketRef.current.emit('deleteMessage', id);
     } catch (err) {
       console.error('Delete failed', err);
     }
@@ -136,7 +139,7 @@ function Chat() {
   };
 
   const handleReaction = (messageId, emoji) => {
-    socket.emit('reactMessage', { messageId, emoji, username: user.username });
+    socketRef.current.emit('reactMessage', { messageId, emoji, username: user.username });
   };
 
   const groupMessagesByDate = (messages) => {

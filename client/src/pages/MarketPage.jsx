@@ -24,6 +24,7 @@ function MarketPage() {
       setProducts(res.data);
     } catch (err) {
       console.error('Failed to load products', err);
+      alert('Failed to load products: ' + (err.response?.data?.error || err.message));
     }
   };
 
