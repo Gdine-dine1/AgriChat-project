@@ -30,7 +30,11 @@ const io = new Server(server, {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://agri-chat-project.vercel.app'
+  ],
   credentials: true
 }));
 app.use(express.json());
