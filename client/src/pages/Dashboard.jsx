@@ -40,11 +40,10 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!user || !user.token) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   return (
     <div className="relative flex flex-col min-h-screen bg-gradient-to-br from-green-100 via-green-200 to-green-300 overflow-hidden">
