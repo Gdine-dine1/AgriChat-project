@@ -1,6 +1,6 @@
 # AgriConnect
 
-AgriConnect is a modern web application designed to connect farmers, agricultural experts, and consumers. It provides a platform for sharing knowledge, trading farm products, chatting, and managing farm requirements through an integrated shop.
+AgriConnect is a modern web application designed to connect farmers, agricultural experts, and consumers. It provides a platform for sharing knowledge, trading farm products, chatting, and managing farm requirements through an integrated shop.welcome all.
 
 ## Deployment
 
