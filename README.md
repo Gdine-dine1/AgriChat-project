@@ -2,6 +2,14 @@
 
 AgriConnect is a modern web application designed to connect farmers, agricultural experts, and consumers. It provides a platform for sharing knowledge, trading farm products, chatting, and managing farm requirements through an integrated shop.
 
+## Deployment
+
+The latest version is deployed at: [https://agri-chat-project.vercel.app/](https://agri-chat-project.vercel.app/)
+
+## Demo Video
+
+Watch a demo of AgriConnect in action: [Video Demo](https://screenrec.com/share/tdZr32Makp)
+
 ## Features
 
 - **User Authentication:** Register, login, and manage user profiles (admin and customer roles).
