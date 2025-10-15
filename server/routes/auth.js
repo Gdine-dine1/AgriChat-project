@@ -10,23 +10,35 @@ router.post('/register', async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
+    if (!username || !email || !password) {
+      return res.status(422).json({ error: 'username, email and password are required' });
+    }
+
+    const emailRegex = /.+@.+\..+/;
+    if (!emailRegex.test(email)) {
+      return res.status(422).json({ error: 'Invalid email format' });
+    }
+
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ error: 'Email already in use' });
+    if (existingUser) return res.status(409).json({ error: 'Email already in use' });
 
     const hashed = await bcrypt.hash(password, 10);
 
-    // Default role is 'user' if not provided
     const user = new User({
       username,
       email,
       password: hashed,
-      role: role || 'user', // 👈 allows registering as admin if needed
+      role: role || 'user',
     });
 
     await user.save();
 
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ error: 'Server misconfiguration: JWT_SECRET missing' });
+    }
+
     const token = jwt.sign(
-      { id: user._id, role: user.role }, // 🛠 role included
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -42,6 +54,10 @@ router.post('/register', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    const isMongoNotConnected = /MongooseError|buffering timed out|Topology/.test(err.message || '');
+    if (isMongoNotConnected) {
+      return res.status(503).json({ error: 'Database unavailable. Please try again later.' });
+    }
     res.status(400).json({ error: err.message });
   }
 });

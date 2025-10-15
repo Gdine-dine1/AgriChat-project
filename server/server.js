@@ -73,12 +73,33 @@ app.use('/api/shop', shopRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/uploads', express.static('uploads'));
 
-// ✅ MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+// ✅ MongoDB connection and boot sequence
+// Disable buffering so queries fail fast if not connected
+mongoose.set('bufferCommands', false);
+
+const PORT = process.env.PORT || 5000;
+
+(async () => {
+  try {
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI is not set');
+    }
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000
+    });
+    console.log("✅ MongoDB connected");
+
+    // Start HTTP server only after DB connection
+    server.listen(PORT, () => {
+      console.log(`🚀 Server listening on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("❌ Failed to start server:", err.message);
+    process.exit(1);
+  }
+})();
 
 // ✅ Socket.IO logic
 const onlineUsers = new Map();
@@ -125,8 +146,15 @@ io.on('connection', (socket) => {
 // ✅ Root route
 app.get('/', (req, res) => res.send('🌐 API Running'));
 
-// ✅ Start the server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server listening on port ${PORT}`);
+// ✅ Health endpoint to verify readiness
+app.get('/api/health', (req, res) => {
+  const mongoState = mongoose.connection.readyState; // 1 = connected
+  res.json({
+    status: 'ok',
+    mongoConnected: mongoState === 1,
+    env: {
+      hasMongoUri: Boolean(process.env.MONGO_URI),
+      hasJwtSecret: Boolean(process.env.JWT_SECRET)
+    }
+  });
 });
