@@ -1,21 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 require('dotenv').config();
 const http = require('http');
 const { Server } = require('socket.io');
 
-// Route imports
-const authRoutes = require('./routes/auth');
-const contactRoute = require('./routes/contact');
-const postRoutes = require('./routes/post');
-const commentRoutes = require('./routes/comments');
-const messageRoutes = require('./routes/messages');
-const profileRoutes = require('./routes/profile');
-const userRoutes = require('./routes/user');
-const productRoutes = require('./routes/product');
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+// Route imports (use explicit paths to avoid case/resolve issues in some deploys)
+const authRoutes = require(path.join(__dirname, 'routes', 'auth.js'));
+const contactRoute = require(path.join(__dirname, 'routes', 'contact.js'));
+const postRoutes = require(path.join(__dirname, 'routes', 'post.js'));
+const commentRoutes = require(path.join(__dirname, 'routes', 'comments.js'));
+const messageRoutes = require(path.join(__dirname, 'routes', 'messages.js'));
+const profileRoutes = require(path.join(__dirname, 'routes', 'profile.js'));
+const userRoutes = require(path.join(__dirname, 'routes', 'user.js'));
+const productRoutes = require(path.join(__dirname, 'routes', 'product.js'));
+const adminRoutes = require(path.join(__dirname, 'routes', 'admin.js'));
+const shopRoutes = require(path.join(__dirname, 'routes', 'shop.js'));
 
 const app = express();
 
