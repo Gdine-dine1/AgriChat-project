@@ -2,21 +2,32 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 const http = require('http');
 const { Server } = require('socket.io');
 
-// Route imports (use explicit paths to avoid case/resolve issues in some deploys)
-const authRoutes = require(path.join(__dirname, 'routes', 'auth.js'));
-const contactRoute = require(path.join(__dirname, 'routes', 'contact.js'));
-const postRoutes = require(path.join(__dirname, 'routes', 'post.js'));
-const commentRoutes = require(path.join(__dirname, 'routes', 'comments.js'));
-const messageRoutes = require(path.join(__dirname, 'routes', 'messages.js'));
-const profileRoutes = require(path.join(__dirname, 'routes', 'profile.js'));
-const userRoutes = require(path.join(__dirname, 'routes', 'user.js'));
-const productRoutes = require(path.join(__dirname, 'routes', 'product.js'));
-const adminRoutes = require(path.join(__dirname, 'routes', 'admin.js'));
-const shopRoutes = require(path.join(__dirname, 'routes', 'shop.js'));
+// Route imports (conditionally load to avoid crashes if some files are absent in deploy)
+const routesDir = path.join(__dirname, 'routes');
+function loadRoute(filename) {
+  const fullPath = path.join(routesDir, filename);
+  if (fs.existsSync(fullPath)) {
+    return require(fullPath);
+  }
+  console.warn(`⚠️  Route file missing: ${fullPath} — skipping mount`);
+  return null;
+}
+
+const authRoutes = loadRoute('auth.js');
+const contactRoute = loadRoute('contact.js');
+const postRoutes = loadRoute('post.js');
+const commentRoutes = loadRoute('comments.js');
+const messageRoutes = loadRoute('messages.js');
+const profileRoutes = loadRoute('profile.js');
+const userRoutes = loadRoute('user.js');
+const productRoutes = loadRoute('product.js');
+const adminRoutes = loadRoute('admin.js');
+const shopRoutes = loadRoute('shop.js');
 
 const app = express();
 
@@ -61,17 +72,17 @@ const io = new Server(server, {
   }
 });
 
-// ✅ API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/contact', contactRoute);
-app.use('/api/posts', postRoutes);
-app.use('/api/comments', commentRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/profile', profileRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/shop', shopRoutes);
-app.use('/api/admin', adminRoutes);
+// ✅ API Routes (mount only if present)
+if (authRoutes) app.use('/api/auth', authRoutes);
+if (contactRoute) app.use('/api/contact', contactRoute);
+if (postRoutes) app.use('/api/posts', postRoutes);
+if (commentRoutes) app.use('/api/comments', commentRoutes);
+if (messageRoutes) app.use('/api/messages', messageRoutes);
+if (profileRoutes) app.use('/api/profile', profileRoutes);
+if (userRoutes) app.use('/api/users', userRoutes);
+if (productRoutes) app.use('/api/products', productRoutes);
+if (shopRoutes) app.use('/api/shop', shopRoutes);
+if (adminRoutes) app.use('/api/admin', adminRoutes);
 app.use('/uploads', express.static('uploads'));
 
 // ✅ MongoDB connection and boot sequence
